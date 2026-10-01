@@ -1,0 +1,4 @@
+import {NavLink,useNavigate} from 'react-router-dom';
+import {signOut} from 'firebase/auth';
+import {auth} from '../firebase';
+export default function Layout({title,children}){const nav=useNavigate();const user=JSON.parse(localStorage.getItem('user')||'{}');async function logout(){await signOut(auth);localStorage.removeItem('user');nav('/')}return <div className="shell"><aside><div className="brand">{user.shopName||'SmartPasal'}<small>Simple Shop Management</small></div><nav>{[['/dashboard','Dashboard'],['/products','Products'],['/sales','Sales'],['/expenses','Expenses'],['/settings','Settings']].map(([to,l])=><NavLink key={to} to={to}>{l}</NavLink>)}</nav><button className="ghost logout" onClick={logout}>Log out</button></aside><main><header className="top"><div><h1>{title}</h1><p>{new Date().toLocaleDateString('en-NP',{dateStyle:'long'})}</p></div></header>{children}</main></div>}

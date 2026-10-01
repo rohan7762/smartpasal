@@ -1,0 +1,7 @@
+const Product=require('../models/Product');
+const clean=b=>({name:String(b.name||'').trim(),price:Number(b.price),cost:Number(b.cost),stock:Number(b.stock),lowStockAt:b.lowStockAt==null?5:Number(b.lowStockAt)});
+const valid=p=>p.name&&[p.price,p.cost,p.stock,p.lowStockAt].every(Number.isFinite)&&p.price>=0&&p.cost>=0&&Number.isInteger(p.stock)&&p.stock>=0&&Number.isInteger(p.lowStockAt)&&p.lowStockAt>=0;
+exports.createProduct=async(req,res,next)=>{try{const p=clean(req.body);if(!valid(p))return res.status(400).json({message:'Enter valid product name, prices and non-negative whole-number stock'});res.status(201).json(await Product.create({...p,user:req.user._id}));}catch(e){next(e)}};
+exports.getProducts=async(req,res,next)=>{try{res.json(await Product.find({user:req.user._id}).sort({name:1}));}catch(e){next(e)}};
+exports.updateProduct=async(req,res,next)=>{try{const p=clean(req.body);if(!valid(p))return res.status(400).json({message:'Enter valid product values'});const item=await Product.findOneAndUpdate({_id:req.params.id,user:req.user._id},p,{new:true,runValidators:true});if(!item)return res.status(404).json({message:'Product not found'});res.json(item);}catch(e){next(e)}};
+exports.deleteProduct=async(req,res,next)=>{try{const item=await Product.findOneAndDelete({_id:req.params.id,user:req.user._id});if(!item)return res.status(404).json({message:'Product not found'});res.json({message:'Product deleted'});}catch(e){next(e)}};

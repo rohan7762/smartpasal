@@ -1,0 +1,6 @@
+const Expense=require('../models/Expense');
+function clean(b){return{title:String(b.title||'').trim(),amount:Number(b.amount),category:String(b.category||'General').trim()||'General',date:b.date?new Date(b.date):new Date()}}
+exports.createExpense=async(req,res,next)=>{try{const x=clean(req.body);if(!x.title||!Number.isFinite(x.amount)||x.amount<=0||Number.isNaN(x.date.getTime()))return res.status(400).json({message:'Enter a valid expense'});res.status(201).json(await Expense.create({...x,user:req.user._id}));}catch(e){next(e)}};
+exports.getExpenses=async(req,res,next)=>{try{res.json(await Expense.find({user:req.user._id}).sort({date:-1}));}catch(e){next(e)}};
+exports.updateExpense=async(req,res,next)=>{try{const x=clean(req.body);if(!x.title||!Number.isFinite(x.amount)||x.amount<=0)return res.status(400).json({message:'Enter a valid expense'});const item=await Expense.findOneAndUpdate({_id:req.params.id,user:req.user._id},x,{new:true,runValidators:true});if(!item)return res.status(404).json({message:'Expense not found'});res.json(item);}catch(e){next(e)}};
+exports.deleteExpense=async(req,res,next)=>{try{const item=await Expense.findOneAndDelete({_id:req.params.id,user:req.user._id});if(!item)return res.status(404).json({message:'Expense not found'});res.json({message:'Expense deleted'});}catch(e){next(e)}};

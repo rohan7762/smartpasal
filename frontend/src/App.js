@@ -1,0 +1,7 @@
+import './App.css';
+import {useEffect,useState} from 'react';
+import {BrowserRouter,Routes,Route,Navigate} from 'react-router-dom';
+import {onAuthStateChanged} from 'firebase/auth';import {auth} from './firebase';
+import Login from './pages/Login';import Register from './pages/Register';import Dashboard from './pages/Dashboard';import Products from './pages/Products';import Sales from './pages/Sales';import Expenses from './pages/Expenses';import Settings from './pages/Settings';import ForgotPassword from './pages/ForgotPassword';
+function Protected({children}){const[user,setUser]=useState(undefined);useEffect(()=>onAuthStateChanged(auth,setUser),[]);if(user===undefined)return <div className="auth"><div className="card auth-card">Loading…</div></div>;return user?children:<Navigate to="/" replace/>}function P({children}){return <Protected>{children}</Protected>}
+export default function App(){return <BrowserRouter><Routes><Route path="/" element={<Login/>}/><Route path="/register" element={<Register/>}/><Route path="/forgot-password" element={<ForgotPassword/>}/><Route path="/dashboard" element={<P><Dashboard/></P>}/><Route path="/products" element={<P><Products/></P>}/><Route path="/sales" element={<P><Sales/></P>}/><Route path="/expenses" element={<P><Expenses/></P>}/><Route path="/settings" element={<P><Settings/></P>}/><Route path="*" element={<Navigate to="/" replace/>}/></Routes></BrowserRouter>}

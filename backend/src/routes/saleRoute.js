@@ -1,0 +1,1 @@
+const router=require('express').Router();const protect=require('../middlewares/authMiddleware');const c=require('../controllers/saleController');router.use(protect);router.get('/summary',c.getSummary);router.post('/',c.createSale);router.get('/',c.getSales);module.exports=router;
