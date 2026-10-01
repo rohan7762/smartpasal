@@ -1,27 +1,185 @@
 # SmartPasal
 
-Production-oriented shop management system for small shops. Features authentication, inventory, low-stock alerts, sales with stock deduction, expense tracking, profit dashboard, responsive UI, and installable PWA shell.
+**Simple Shop Management**
 
-## Local setup
-1. Install Node.js 18+ and MongoDB (or create a MongoDB Atlas database).
-2. Backend: copy `backend/.env.example` to `backend/.env`, set `MONGO_URI`, a strong `JWT_SECRET`, and `CLIENT_ORIGIN`; then run `npm install` and `npm run dev` inside `backend`.
-3. Frontend: copy `frontend/.env.example` to `frontend/.env`, set `REACT_APP_API_URL=http://localhost:5000/api`; then run `npm install` and `npm start` inside `frontend`.
+SmartPasal is a mobile-friendly shop management system designed for small local businesses in Nepal. It helps shop owners manage products, inventory, sales, expenses, and basic business performance from a simple dashboard.
 
-## Production deployment
-- Deploy `backend` to a Node host such as Render/Railway/Fly.io. Set `NODE_ENV=production`, `MONGO_URI`, `JWT_SECRET`, and `CLIENT_ORIGIN=https://your-frontend-domain`.
-- Deploy `frontend` to Vercel. Set `REACT_APP_API_URL=https://your-api-domain/api` before the production build.
-- Never commit `.env` files or secrets. Restrict MongoDB Atlas network/database access appropriately.
-- `/api/health` is available for health checks.
+## Features
 
-## Security implemented
-Helmet headers, CORS allow-list, request size limits, rate limiting, bcrypt password hashing, JWT expiry, user-scoped queries, server-side validation, generic production 500 errors, and graceful shutdown.
+- Secure user registration and login
+- Firebase Authentication
+- Forgot/reset password via Firebase
+- Separate data for each shop owner
+- Product and inventory management
+- Sales recording
+- Expense tracking
+- Dashboard with business statistics
+- Basic profit reporting
+- Nepalese Rupees (NPR / Rs.)
+- Responsive mobile and desktop interface
+- Progressive Web App (PWA) support
+- Protected backend API
 
-## Important scope note
-This is suitable as a small-shop MVP. Before handling high-value or regulated transactions, add automated API/integration tests, backups/restore drills, audit logging, stronger session/token revocation, monitoring, and transactional guarantees appropriate to your MongoDB deployment.
+## Tech Stack
 
-## Password reset / SMTP
-Forgot Password is implemented with one-time tokens that expire after 15 minutes. Configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, and `MAIL_FROM` in `backend/.env`. Never commit real credentials. After this update, run `npm install` in `backend` once to install Nodemailer.
+### Frontend
+- React
+- React Router
+- Axios
+- Firebase Authentication
+- PWA
 
+### Backend
+- Node.js
+- Express.js
+- Firebase Admin SDK
+- MongoDB / Mongoose
 
-## Firebase Authentication
-SmartPasal now uses Firebase Authentication for email/password registration, login and password-reset emails. The Express API verifies Firebase ID tokens using Firebase Admin. MongoDB stores shop profiles and business data, not passwords. Configure the frontend Firebase web-app values and backend Firebase service-account values using the provided `.env.example` files. Enable Email/Password in Firebase Console > Authentication > Sign-in method.
+### Database
+- MongoDB Atlas
+
+### Authentication
+Firebase Authentication handles:
+
+- Email/password registration
+- Login
+- Password reset
+- User identity
+
+The frontend sends a Firebase ID token to the Express API. The backend verifies the token using the Firebase Admin SDK before allowing access to protected resources.
+
+## Architecture
+
+```text
+User
+  |
+  v
+React Frontend
+  |
+  v
+Firebase Authentication
+  |
+  | Firebase ID Token
+  v
+Node.js / Express API
+  |
+  | Firebase Admin verification
+  v
+MongoDB Atlas
+  |
+  +-- Users
+  +-- Products
+  +-- Sales
+  +-- Expenses
+```
+
+Each authenticated user is associated with their own SmartPasal account, keeping shop data isolated between users.
+
+## Project Structure
+
+```text
+smartpasal/
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middlewares/
+│   │   ├── models/
+│   │   └── routes/
+│   ├── .env.example
+│   ├── package.json
+│   └── server.js
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── components/
+│   │   └── pages/
+│   ├── .env.example
+│   └── package.json
+│
+├── render.yaml
+└── README.md
+```
+
+## Local Development
+
+Clone the repository:
+
+```bash
+git clone https://github.com/YOUR_USERNAME/smartpasal.git
+cd smartpasal
+```
+
+### Backend
+
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file using `.env.example` and configure the required MongoDB and Firebase Admin environment variables.
+
+Then run:
+
+```bash
+npm run dev
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+```
+
+Create a `.env` file using `.env.example` and add the Firebase web application configuration.
+
+Then run:
+
+```bash
+npm start
+```
+
+## Production Build
+
+```bash
+cd frontend
+npm run build
+```
+
+## Security
+
+- Passwords are managed by Firebase Authentication.
+- Firebase Admin verifies authentication tokens on the backend.
+- Shop data is isolated by authenticated user.
+- Environment variables are excluded from Git.
+- Firebase Admin private keys and MongoDB credentials must never be committed to the repository.
+
+## Deployment
+
+Planned production infrastructure:
+
+- **Frontend:** Vercel
+- **Backend:** Render
+- **Database:** MongoDB Atlas
+- **Authentication:** Firebase Authentication
+
+## Currency
+
+SmartPasal uses Nepalese Rupees:
+
+```text
+Rs. / NPR
+```
+
+## Status
+
+SmartPasal is currently under active development.
+
+Core authentication, inventory, sales, expenses, dashboard functionality, and multi-user data isolation have been tested locally.
+
+## Author
+
+**Rohan Paheli**
